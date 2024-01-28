@@ -37,7 +37,7 @@ namespace PCP.Univim
 		{
 			mSocket?.Close(1000);
 			DeleteSocketFile();
-			Debug.Log("Socket closed");
+			/* Debug.Log("Socket closed"); */
 		}
 
 		private void StartServer()
@@ -48,13 +48,11 @@ namespace PCP.Univim
 
 			mSocket.Bind(mEndpoint);
 			mSocket.Listen(5);
-			Debug.Log("Server started waiting for client to connect...");
+			/* Debug.Log("Server started waiting for client to connect..."); */
 
 			//PERF:maybe i need a counter for that?but seems good from debugger
 			while (true)
 			{
-				/* if (mSocket.Poll(0, SelectMode.SelectRead) && Enabled) */
-				/* { */
 				mHandler = mSocket.Accept();
 				byte[] buffer = new byte[1024];
 				int received = mHandler.Receive(buffer, 0, buffer.Length, SocketFlags.None);
@@ -64,7 +62,6 @@ namespace PCP.Univim
 					//FIX: async?
 					CommandHandler(message);
 				}
-				/* } */
 			}
 		}
 		private void CommandHandler(string msg)
