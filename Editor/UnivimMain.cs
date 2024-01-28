@@ -1,7 +1,6 @@
 using System;
 using UnityEditor;
 using UnityEditor.Compilation;
-using UnityEditorInternal;
 using UnityEngine;
 namespace PCP.Univim
 {
@@ -12,15 +11,12 @@ namespace PCP.Univim
 		private static UnixSocketServer mSocketServer;
 		private static CommandDispatcher mDispacher;
 		private static readonly string socketPath = "/tmp/Univim";
-		private static bool isEditorFocused = true;
-		internal static bool needUpdate;
 
 		public static bool Enabled { get; private set; } = true;
 		static UnivimMain()
 		{
 			if (!SessionState.GetBool("DisableUnivim", false))
 			{
-				needUpdate = false;
 				CompilationPipeline.compilationStarted += OnCompilationStarted;
 				/* CompilationPipeline.compilationFinished += OnCompilationFinished; */
 				EditorApplication.quitting += CloseSocketServer;
@@ -31,8 +27,7 @@ namespace PCP.Univim
 
 		private static void Init()
 		{
-			if (mSocketServer != null)
-				return;
+			if (mSocketServer != null) return;
 			mDispacher ??= new();
 			try
 			{
@@ -51,25 +46,6 @@ namespace PCP.Univim
 		{
 			if (!Enabled) return;
 			mDispacher.Update();
-			//Check focus
-			if (InternalEditorUtility.isApplicationActive != isEditorFocused)
-			{
-				isEditorFocused = !isEditorFocused;
-				if (isEditorFocused)
-				{
-					mSocketServer.Enabled = false;
-					Debug.Log("Foreground!");
-				}
-				else if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
-				{
-					mSocketServer.Enabled = true;
-					Debug.Log("Background!");
-				}
-			}
-			if (!isEditorFocused && !EditorApplication.isCompiling && !EditorApplication.isUpdating && needUpdate)
-			{
-				AssetDatabase.Refresh();
-			}
 		}
 		[MenuItem("Tools/Univim/Toggle Univim")]
 		public static void ToggleAutoCompilation()

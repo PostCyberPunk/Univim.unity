@@ -88,7 +88,7 @@ namespace PCP.Univim
 					/* Debug.Log("Pause Playmode"); */
 					break;
 				case "comp":
-					_action = () => { UnivimMain.needUpdate = true; };
+					_action = () => { AssetDatabase.Refresh(); };
 					break;
 				default:
 					Debug.Log($"Received:{msg}");
